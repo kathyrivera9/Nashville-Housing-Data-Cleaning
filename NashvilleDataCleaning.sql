@@ -72,7 +72,9 @@ Where a.PropertyAddress is null
 
 -- Breaking out Address into Individual Columns (Address, City, State)
 /*
-    The issue was that the PropertyAddress column was too hard to read. So using substring and charindex 
+    The issue was that the PropertyAddress column was too hard to read since it had the whole address in the column. So using substring and charindex, 
+    I split the address into two columns where one contained the address and the other contained the city. 
+    Another method was used for OwnerAddress, where the parser was used to split the owneraddress in three columns containing the address, city, and state.
 */
 
 
@@ -156,6 +158,10 @@ From ProjectDataCleaning.dbo.NashvilleHousing
 
 
 -- Change Y and N to Yes and No in "Sold as Vacant" field
+/*
+	The issue was that in one column there were differently written responses. To make the data more readable and uniforomed, we replaced the Y/N into Yes/No.
+	This was decided based on the fact that more Yes were written than Y
+*/
 
 
 Select Distinct(SoldAsVacant), Count(SoldAsVacant)
@@ -188,6 +194,10 @@ SET SoldAsVacant = CASE When SoldAsVacant = 'Y' THEN 'Yes'
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Remove Duplicates
+/*
+	The issue was that there were duplicates. In data, this is not useful as it takes up space and contains something unnecessary. There we used a CTE to see if 
+	there were duplicates by checking which data had the same PropertyAddress, SalePrice, SaleDate, and LegalReference. Then those columns were deleted.
+*/
 
 WITH RowNumCTE AS(
 Select *,
@@ -204,11 +214,16 @@ Select *,
 From ProjectDataCleaning.dbo.NashvilleHousing
 --order by ParcelID
 )
+DELETE
+From RowNumCTE
+Where row_num > 1
+Order by PropertyAddress
+/*
 Select *
 From RowNumCTE
 Where row_num > 1
 Order by PropertyAddress
-
+*/
 
 
 Select *
@@ -220,6 +235,10 @@ From ProjectDataCleaningt.dbo.NashvilleHousing
 ---------------------------------------------------------------------------------------------------------
 
 -- Delete Unused Columns
+/*
+	As a result of our previous queries, there were columns that were no longer useful therefore these columns were deleted to provide a data that contains only
+	useful information.
+*/
 
 
 
